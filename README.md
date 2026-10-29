@@ -1,8 +1,8 @@
-# Linux-IPC-Semaphores
-Ex05-Linux IPC-Semaphores
+# Linux-IPC-Message-Queues
+Linux IPC-Message Queues
 
 # AIM:
-To Write a C program that implements a producer-consumer system with two processes using Semaphores.
+To write a C program that receives a message from message queue and display them
 
 # DESIGN STEPS:
 
@@ -12,28 +12,67 @@ Navigate to any Linux environment installed on the system or installed inside a 
 
 ### Step 2:
 
-Write the C Program using Linux Process API - Sempahores
+Write the C Program using Linux message queues API 
 
 ### Step 3:
 
 Execute the C Program for the desired output. 
 
 # PROGRAM:
+```
+writer.c
 
-## Write a C program that implements a producer-consumer system with two processes using Semaphores.
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+struct mesg_buffer {
+long mesg_type;
+char mesg_text[100];
+} message;
+int main()
+{ 
+key_t key;
+int msgid;
+key = ftok("writter", 65);
+msgid = msgget(key, 0666 | IPC_CREAT);
+message.mesg_type = 1;
+printf("Write Data : ");
+gets(message.mesg_text);
+msgsnd(msgid, &message, sizeof(message), 0);
+printf("Data send is : %s \n", message.mesg_text);
+return 0;
+}
 
+reader.c
 
+#include <stdio.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+struct mesg_buffer {
+long mesg_type;
+char mesg_text[100];
+} message;
+int main()
+{
+key_t key;
+int msgid;
+key = ftok("reader.c", 65);
+msgid = msgget(key, 0666 | IPC_CREAT);
+msgrcv(msgid, &message, sizeof(message), 1, 0);
+printf("Data Received is : %s \n",message.mesg_text);
+msgctl(msgid, IPC_RMID, NULL);
+return 0;
+}
+```
+## C program that receives a message from message queue and display them
 
 
 ## OUTPUT
-$ ./sem.o 
 
-
-$ ipcs
-
+<img width="1113" height="318" alt="image" src="https://github.com/user-attachments/assets/fe746bfe-93a4-425b-939f-7aa134c83ec6" />
 
 
 
 
 # RESULT:
-The program is executed successfully.
+The programs are executed successfully.
